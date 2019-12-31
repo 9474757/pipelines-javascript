@@ -1,3 +1,4 @@
+Test pipeline.
 https://dev.azure.com/liholetkos/olvin/_apis/build/status/9474757.pipelines-javascript?branchName=master
 # Sample NodeJS application for Azure Pipelines docs
 
