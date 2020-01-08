@@ -1,0 +1,19 @@
+image: node:10.8.0
+pipelines:
+  default:
+    - step:
+        caches:
+          - node
+        script: # Modify the commands below to build your repository.
+          - npm install
+          - npm test
+          - docker login -u $(LOGIN_CR) -p $(PASSWORD_CR)
+          - docker build -t $(LOGIN_CR)/test-node:latest .
+          - docker push $(LOGIN_CR)/test-node:latest
+        services:
+          - mongo
+          - docker
+definitions:
+  services:
+    mongo:
+      image: mongo
