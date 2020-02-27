@@ -1,4 +1,4 @@
-FROM node:7.4.0
+FROM node:10.19.0-alpine3.11
 
 WORKDIR /app
 COPY package.json /app
@@ -12,5 +12,5 @@ WORKDIR /app/build
 
 RUN npm install -g http-server
 
-EXPOSE 8080
+EXPOSE 8080 3000
 ENTRYPOINT http-server
