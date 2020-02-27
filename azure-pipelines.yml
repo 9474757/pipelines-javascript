@@ -1,24 +1,9 @@
-# Node.js
-# Build a general Node.js project with npm.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
-trigger:
-- master
-
-pool:
-  vmImage: 'ubuntu-latest'
-
 parameters:
   Registry: '012556223264.dkr.ecr.eu-central-1.amazonaws.com'
   Repo: '10_node'
   Tag: 'alpine'
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
 - bash: |
     cp $(Build.SourcesDirectory)/Dockerfile $(Build.ArtifactStagingDirectory) \
     && $(aws ecr get-login --no-include-email --region eu-central-1) \
@@ -26,18 +11,3 @@ steps:
     && docker push ${{ parameters.Registry }}/${{ parameters.Repo }}:${{ parameters.Tag }} \
     && docker rmi -f ${{parameters.Registry }}/${{ parameters.Repo }}:${{ parameters.Tag }}
   displayName: 'Do the Docker stuff'
-
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
-
-- task: AzureWebAppContainer@1
-  displayName: 'Azure Web App on Container Deploy'
-  inputs:
-    azureSubscription: $(azureSubscription)
-    appName: $(appName)
-    containers: $(containerRegistry)/$(imageRepository):$(tag)
-
-
-
