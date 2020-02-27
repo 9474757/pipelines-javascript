@@ -19,11 +19,3 @@ steps:
     npm install
     npm run build
   displayName: 'npm install and build'
-
-- task: ECRPushImage@1
-  inputs:
-    awsCredentials: 'GetAlert-AWS-Connection-New'
-    regionName: 'eu-central-1'
-    imageSource: 'imagename'
-    sourceImageName: '10_node'
-    repositoryName: '012556223264.dkr.ecr.eu-central-1.amazonaws.com'
