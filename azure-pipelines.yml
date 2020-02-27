@@ -9,6 +9,11 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+parameters:
+  Registry: '012556223264.dkr.ecr.eu-central-1.amazonaws.com'
+  Repo: '10_node'
+  Tag: 'alpine'
+
 steps:
 - task: NodeTool@0
   inputs:
@@ -34,8 +39,5 @@ steps:
     appName: $(appName)
     containers: $(containerRegistry)/$(imageRepository):$(tag)
 
-parameters:
-  Registry: '012556223264.dkr.ecr.eu-central-1.amazonaws.com'
-  Repo: '10_node'
-  Tag: 'alpine'
+
 
