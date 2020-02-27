@@ -1,13 +1,29 @@
-parameters:
-  Registry: '012556223264.dkr.ecr.eu-central-1.amazonaws.com'
-  Repo: '10_node'
-  Tag: 'alpine'
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 steps:
-- bash: |
-    cp $(Build.SourcesDirectory)/Dockerfile $(Build.ArtifactStagingDirectory) \
-    && $(aws ecr get-login --no-include-email --region eu-central-1) \
-    && docker build -f $(Build.ArtifactStagingDirectory)/Dockerfile -t ${{parameters.Registry }}/${{ parameters.Repo }}:${{ parameters.Tag }} $(Build.ArtifactStagingDirectory) \
-    && docker push ${{ parameters.Registry }}/${{ parameters.Repo }}:${{ parameters.Tag }} \
-    && docker rmi -f ${{parameters.Registry }}/${{ parameters.Repo }}:${{ parameters.Tag }}
-  displayName: 'Do the Docker stuff'
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npm run build
+  displayName: 'npm install and build'
+
+- task: ECRPushImage@1
+  inputs:
+    awsCredentials: 'GetAlert-AWS-Connection-New'
+    regionName: 'eu-central-1'
+    imageSource: 'imagename'
+    sourceImageName: '10_node'
+    repositoryName: '012556223264.dkr.ecr.eu-central-1.amazonaws.com'
