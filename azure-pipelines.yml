@@ -14,8 +14,28 @@ steps:
   inputs:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
+- bash: |
+    cp $(Build.SourcesDirectory)/Dockerfile $(Build.ArtifactStagingDirectory) \
+    && $(aws ecr get-login --no-include-email --region eu-central-1) \
+    && docker build -f $(Build.ArtifactStagingDirectory)/Dockerfile -t ${{parameters.Registry }}/${{ parameters.Repo }}:${{ parameters.Tag }} $(Build.ArtifactStagingDirectory) \
+    && docker push ${{ parameters.Registry }}/${{ parameters.Repo }}:${{ parameters.Tag }} \
+    && docker rmi -f ${{parameters.Registry }}/${{ parameters.Repo }}:${{ parameters.Tag }}
+  displayName: 'Do the Docker stuff'
 
 - script: |
     npm install
     npm run build
   displayName: 'npm install and build'
+
+- task: AzureWebAppContainer@1
+  displayName: 'Azure Web App on Container Deploy'
+  inputs:
+    azureSubscription: $(azureSubscription)
+    appName: $(appName)
+    containers: $(containerRegistry)/$(imageRepository):$(tag)
+
+parameters:
+  Registry: '012556223264.dkr.ecr.eu-central-1.amazonaws.com'
+  Repo: '10_node'
+  Tag: 'alpine'
+
